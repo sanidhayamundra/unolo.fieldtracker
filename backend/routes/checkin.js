@@ -114,7 +114,7 @@ router.post('/', authenticateToken, async (req, res) => {
     }
 });
 
-// Checkout from current location
+// Checkout from current locatio
 router.put('/checkout', authenticateToken, async (req, res) => {
     try {
         const [activeCheckins] = await pool.execute(
