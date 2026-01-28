@@ -47,3 +47,12 @@ This document lists all bugs identified and fixed in the Field Force Tracker app
 **Reasoning:** String concatenation in SQL is how injection attacks happen. Always use parameters.
 
 ---
+
+## Bug 6: Wrong Column Names in INSERT
+
+**Location:** `backend/routes/checkin.js`, lines 57-58  
+**Cause:** INSERT used `lat, lng` but the schema defines `latitude, longitude`.  
+**Fix:** Changed to `latitude, longitude`.  
+**Reasoning:** Schema mismatch causes SQLite errors or silent data loss.
+
+---
