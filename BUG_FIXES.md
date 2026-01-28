@@ -11,3 +11,12 @@ This document lists all bugs identified and fixed in the Field Force Tracker app
 **Reasoning:** Authentication must be deterministic. Missing await is a common async pitfall.
 
 ---
+
+## Bug 2: Password Exposed in JWT Token
+
+**Location:** `backend/routes/auth.js`, line 35  
+**Cause:** The JWT payload included `password: user.password`. Anyone decoding the token (it's just base64) could see the hashed password.  
+**Fix:** Removed `password` from the JWT payload.  
+**Reasoning:** Hashed or not, passwords should never leave the server. JWTs are not encrypted.
+
+---
