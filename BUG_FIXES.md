@@ -20,3 +20,12 @@ This document lists all bugs identified and fixed in the Field Force Tracker app
 **Reasoning:** Hashed or not, passwords should never leave the server. JWTs are not encrypted.
 
 ---
+
+## Bug 3: Email Login is Case-Sensitive
+
+**Location:** `backend/routes/auth.js`, line 17-19  
+**Cause:** Email was compared directly without normalization. `User@UNOLO.COM` wouldn't match `user@unolo.com`.  
+**Fix:** Normalized email with `.toLowerCase().trim()` and used `LOWER()` in the SQL query.  
+**Reasoning:** Emails are case-insensitive by RFC. Users expect this.
+
+---
