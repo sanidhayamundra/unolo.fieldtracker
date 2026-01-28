@@ -41,7 +41,7 @@ router.get('/clients', authenticateToken, async (req, res) => {
     }
 });
 
-// Create new check-in
+// Create new check-i
 router.post('/', authenticateToken, async (req, res) => {
     try {
         const { client_id, latitude, longitude, notes } = req.body;
