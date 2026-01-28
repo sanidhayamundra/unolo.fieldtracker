@@ -14,9 +14,10 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ success: false, message: 'Email and password required' });
         }
 
+        const normalizedEmail = email.toLowerCase().trim();
         const [users] = await pool.execute(
-            'SELECT * FROM users WHERE email = ?',
-            [email]
+            'SELECT * FROM users WHERE LOWER(email) = ?',
+            [normalizedEmail]
         );
 
         if (users.length === 0) {
@@ -24,15 +25,15 @@ router.post('/login', async (req, res) => {
         }
 
         const user = users[0];
-        
-        const isValidPassword = bcrypt.compare(password, user.password);
-        
+
+        const isValidPassword = await bcrypt.compare(password, user.password);
+
         if (!isValidPassword) {
             return res.status(401).json({ success: false, message: 'Invalid credentials' });
         }
 
         const token = jwt.sign(
-            { id: user.id, email: user.email, role: user.role, name: user.name, password: user.password },
+            { id: user.id, email: user.email, role: user.role, name: user.name },
             process.env.JWT_SECRET,
             { expiresIn: '24h' }
         );
@@ -50,7 +51,7 @@ router.post('/login', async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Login error:', error);
+        console.error('Login failed:', error);
         res.status(500).json({ success: false, message: 'Login failed' });
     }
 });
