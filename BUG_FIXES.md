@@ -90,3 +90,14 @@ This document lists all bugs identified and fixed in the Field Force Tracker app
 **Cause:** `user.id === 1` was used to check if user is a manager. Only works if the first user is always a manager.  
 **Fix:** Changed to `user.role === 'manager'`.  
 **Reasoning:** Hardcoded IDs break when data changes. Role field exists for this purpose.
+
+---
+
+## Bug 11: History Page Crashes on Load
+
+**Location:** `frontend/src/pages/History.jsx`, lines 45-53  
+**Cause:** `totalHours` was calculated using `checkins.reduce()` before `checkins` was loaded. Initial state was `null`, and `null.reduce()` throws.  
+**Fix:** Moved calculation after loading check and guarded with `(checkins || [])`.  
+**Reasoning:** Race condition between render and data fetch. Always guard against null.
+
+---

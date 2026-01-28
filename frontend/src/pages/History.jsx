@@ -16,16 +16,16 @@ function History({ user }) {
         try {
             let url = '/checkin/history';
             const params = new URLSearchParams();
-            
+
             if (startDate) params.append('start_date', startDate);
             if (endDate) params.append('end_date', endDate);
-            
+
             if (params.toString()) {
                 url += '?' + params.toString();
             }
 
             const response = await api.get(url);
-            
+
             if (response.data.success) {
                 setCheckins(response.data.data);
             }
@@ -42,16 +42,6 @@ function History({ user }) {
         fetchHistory();
     };
 
-    const totalHours = checkins.reduce((total, checkin) => {
-        if (checkin.checkout_time) {
-            const checkinTime = new Date(checkin.checkin_time);
-            const checkoutTime = new Date(checkin.checkout_time);
-            const hours = (checkoutTime - checkinTime) / (1000 * 60 * 60);
-            return total + hours;
-        }
-        return total;
-    }, 0);
-
     if (loading) {
         return (
             <div className="flex justify-center items-center h-64">
@@ -67,6 +57,16 @@ function History({ user }) {
             </div>
         );
     }
+
+    const totalHours = (checkins || []).reduce((total, checkin) => {
+        if (checkin.checkout_time) {
+            const checkinTime = new Date(checkin.checkin_time);
+            const checkoutTime = new Date(checkin.checkout_time);
+            const hours = (checkoutTime - checkinTime) / (1000 * 60 * 60);
+            return total + hours;
+        }
+        return total;
+    }, 0);
 
     return (
         <div>
@@ -139,6 +139,7 @@ function History({ user }) {
                                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Check-in</th>
                                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Check-out</th>
                                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Duration</th>
+                                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Distance</th>
                                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Notes</th>
                             </tr>
                         </thead>
@@ -146,7 +147,7 @@ function History({ user }) {
                             {checkins.map((checkin) => {
                                 const checkinTime = new Date(checkin.checkin_time);
                                 const checkoutTime = checkin.checkout_time ? new Date(checkin.checkout_time) : null;
-                                const duration = checkoutTime 
+                                const duration = checkoutTime
                                     ? ((checkoutTime - checkinTime) / (1000 * 60 * 60)).toFixed(1) + 'h'
                                     : 'Active';
 
@@ -164,13 +165,19 @@ function History({ user }) {
                                             {checkoutTime ? checkoutTime.toLocaleTimeString() : '-'}
                                         </td>
                                         <td className="px-4 py-3">
-                                            <span className={`px-2 py-1 rounded text-xs ${
-                                                duration === 'Active' 
-                                                    ? 'bg-green-100 text-green-800' 
-                                                    : 'bg-gray-100 text-gray-800'
-                                            }`}>
+                                            <span className={`px-2 py-1 rounded text-xs ${duration === 'Active'
+                                                ? 'bg-green-100 text-green-800'
+                                                : 'bg-gray-100 text-gray-800'
+                                                }`}>
                                                 {duration}
                                             </span>
+                                        </td>
+                                        <td className="px-4 py-3 text-sm">
+                                            {checkin.distance_from_client != null ? (
+                                                <span className={`${checkin.distance_from_client > 0.5 ? 'text-yellow-600' : 'text-gray-600'}`}>
+                                                    {checkin.distance_from_client} km
+                                                </span>
+                                            ) : '-'}
                                         </td>
                                         <td className="px-4 py-3 text-sm text-gray-600">
                                             {checkin.notes || '-'}
