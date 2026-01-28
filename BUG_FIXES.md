@@ -75,3 +75,10 @@ This document lists all bugs identified and fixed in the Field Force Tracker app
 **Reasoning:** State machines need proper guards. Only active check-ins should be checkable-out.
 
 ---
+
+## Bug 9: MySQL DATE_SUB in SQLite
+
+**Location:** `backend/routes/dashboard.js`, line 80  
+**Cause:** `DATE_SUB(NOW(), INTERVAL 7 DAY)` is MySQL syntax.  
+**Fix:** Changed to `datetime('now', '-7 days')`.  
+**Reasoning:** Same issue as Bug 7—SQLite has its own date arithmetic syntax.
