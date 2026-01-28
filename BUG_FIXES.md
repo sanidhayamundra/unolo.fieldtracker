@@ -29,3 +29,12 @@ This document lists all bugs identified and fixed in the Field Force Tracker app
 **Reasoning:** Emails are case-insensitive by RFC. Users expect this.
 
 ---
+
+## Bug 4: Validation Error Returns HTTP 200
+
+**Location:** `backend/routes/checkin.js`, line 30  
+**Cause:** Missing client_id returned status 200 with `success: false`. Clients checking HTTP status would think the request succeeded.  
+**Fix:** Changed to status 400.  
+**Reasoning:** 4xx codes indicate client error. 200 with an error body is an API anti-pattern.
+
+---
