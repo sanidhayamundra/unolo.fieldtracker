@@ -4,7 +4,7 @@ const { authenticateToken } = require('../middleware/auth');
 
 const router = express.Router();
 
-// Haversine formula for distance calculation between two coordinates
+// Haversine formula for distance calculation between two coordinate
 function calculateDistance(lat1, lon1, lat2, lon2) {
     if (lat1 == null || lon1 == null || lat2 == null || lon2 == null) {
         return null;
