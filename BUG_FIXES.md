@@ -101,3 +101,13 @@ This document lists all bugs identified and fixed in the Field Force Tracker app
 **Reasoning:** Race condition between render and data fetch. Always guard against null.
 
 ---
+
+
+## Bug 12: Check-in Form Submits Twice
+
+**Location:** `frontend/src/pages/CheckIn.jsx`, line 58  
+**Cause:** `handleCheckIn` didn't call `e.preventDefault()`. Form submitted via HTTP POST AND the handler.  
+**Fix:** Added `e.preventDefault()` at the start of the handler.  
+**Reasoning:** Default form behavior conflicts with SPA patterns. Always prevent default in React forms.
+
+---

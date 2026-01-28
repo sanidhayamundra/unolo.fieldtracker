@@ -1,5 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import api from '../utils/api';
+
+// Client-side Haversine formula for distance preview
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    if (lat1 == null || lon1 == null || lat2 == null || lon2 == null) {
+        return null;
+    }
+    const R = 6371; // Earth's radius in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) ** 2 +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) ** 2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return Math.round(R * c * 100) / 100;
+}
 
 function CheckIn({ user }) {
     const [clients, setClients] = useState([]);
@@ -11,6 +26,21 @@ function CheckIn({ user }) {
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+
+    // Calculate distance preview when client is selected
+    const distancePreview = useMemo(() => {
+        if (!selectedClient || !location) return null;
+        const client = clients.find(c => c.id === parseInt(selectedClient));
+        if (!client || client.latitude == null || client.longitude == null) return null;
+        return calculateDistance(
+            location.latitude,
+            location.longitude,
+            client.latitude,
+            client.longitude
+        );
+    }, [selectedClient, location, clients]);
+
+    const isFarFromClient = distancePreview != null && distancePreview > 0.5;
 
     useEffect(() => {
         fetchData();
@@ -47,7 +77,6 @@ function CheckIn({ user }) {
                     });
                 },
                 (err) => {
-                    console.error('Location error:', err);
                     // Set default location (Gurugram) for testing
                     setLocation({ latitude: 28.4595, longitude: 77.0266 });
                 }
@@ -56,6 +85,7 @@ function CheckIn({ user }) {
     };
 
     const handleCheckIn = async (e) => {
+        e.preventDefault();
         setError('');
         setSuccess('');
         setSubmitting(true);
@@ -69,7 +99,9 @@ function CheckIn({ user }) {
             });
 
             if (response.data.success) {
-                setSuccess('Checked in successfully!');
+                const distanceKm = response.data.data.distance_km;
+                const distanceMsg = distanceKm != null ? ` (Distance: ${distanceKm} km)` : '';
+                setSuccess(`Checked in successfully!${distanceMsg}`);
                 setSelectedClient('');
                 setNotes('');
                 fetchData(); // Refresh data
@@ -90,7 +122,7 @@ function CheckIn({ user }) {
 
         try {
             const response = await api.put('/checkin/checkout');
-            
+
             if (response.data.success) {
                 setSuccess('Checked out successfully!');
                 setActiveCheckin(null);
@@ -164,7 +196,7 @@ function CheckIn({ user }) {
             {!activeCheckin && (
                 <div className="bg-white rounded-lg shadow p-6">
                     <h3 className="font-semibold mb-4">New Check-in</h3>
-                    
+
                     <form onSubmit={handleCheckIn}>
                         <div className="mb-4">
                             <label className="block text-gray-700 text-sm font-medium mb-2">
@@ -184,6 +216,20 @@ function CheckIn({ user }) {
                                 ))}
                             </select>
                         </div>
+
+                        {/* Distance Preview */}
+                        {distancePreview != null && (
+                            <div className={`mb-4 p-3 rounded-md ${isFarFromClient ? 'bg-yellow-50 border border-yellow-300' : 'bg-green-50 border border-green-300'}`}>
+                                <p className={`text-sm font-medium ${isFarFromClient ? 'text-yellow-800' : 'text-green-800'}`}>
+                                    Distance from client: {distancePreview} km
+                                </p>
+                                {isFarFromClient && (
+                                    <p className="text-xs text-yellow-700 mt-1">
+                                        ⚠️ You are more than 500m away from the client location
+                                    </p>
+                                )}
+                            </div>
+                        )}
 
                         <div className="mb-4">
                             <label className="block text-gray-700 text-sm font-medium mb-2">
