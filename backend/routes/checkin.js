@@ -4,7 +4,7 @@ const { authenticateToken } = require('../middleware/auth');
 
 const router = express.Router();
 
-// Haversine formula for distance calculation between two coordinate
+// Haversine formula for distance calculation between two coordinates
 function calculateDistance(lat1, lon1, lat2, lon2) {
     if (lat1 == null || lon1 == null || lat2 == null || lon2 == null) {
         return null;
@@ -41,7 +41,7 @@ router.get('/clients', authenticateToken, async (req, res) => {
     }
 });
 
-// Create new check-i
+// Create new check-in
 router.post('/', authenticateToken, async (req, res) => {
     try {
         const { client_id, latitude, longitude, notes } = req.body;
@@ -114,7 +114,7 @@ router.post('/', authenticateToken, async (req, res) => {
     }
 });
 
-// Checkout from current locatio
+// Checkout from current location
 router.put('/checkout', authenticateToken, async (req, res) => {
     try {
         const [activeCheckins] = await pool.execute(
