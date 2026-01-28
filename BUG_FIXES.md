@@ -56,3 +56,12 @@ This document lists all bugs identified and fixed in the Field Force Tracker app
 **Reasoning:** Schema mismatch causes SQLite errors or silent data loss.
 
 ---
+
+## Bug 7: MySQL NOW() Used in SQLite
+
+**Location:** `backend/routes/checkin.js`, line 88  
+**Cause:** `NOW()` is MySQL syntax. SQLite doesn't recognize it.  
+**Fix:** Replaced with `datetime('now')`.  
+**Reasoning:** Different databases have different function syntax. SQLite uses datetime().
+
+
