@@ -38,3 +38,12 @@ This document lists all bugs identified and fixed in the Field Force Tracker app
 **Reasoning:** 4xx codes indicate client error. 200 with an error body is an API anti-pattern.
 
 ---
+
+## Bug 5: SQL Injection Vulnerability
+
+**Location:** `backend/routes/checkin.js`, lines 113-116  
+**Cause:** `start_date` and `end_date` were concatenated directly into SQL strings via template literals.  
+**Fix:** Used parameterized queries with `?` placeholders.  
+**Reasoning:** String concatenation in SQL is how injection attacks happen. Always use parameters.
+
+---
