@@ -12,15 +12,14 @@ function Dashboard({ user }) {
 
     const fetchDashboardData = async () => {
         try {
-            const endpoint = user.id === 1 ? '/dashboard/stats' : '/dashboard/employee';
+            const endpoint = user.role === 'manager' ? '/dashboard/stats' : '/dashboard/employee';
             const response = await api.get(endpoint);
-            
+
             if (response.data.success) {
                 setStats(response.data.data);
             }
         } catch (err) {
             setError('Failed to load dashboard');
-            console.error(err);
         } finally {
             setLoading(false);
         }
@@ -47,7 +46,7 @@ function Dashboard({ user }) {
         return (
             <div>
                 <h2 className="text-2xl font-bold mb-6">Manager Dashboard</h2>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div className="bg-white p-6 rounded-lg shadow">
                         <h3 className="text-gray-500 text-sm">Team Size</h3>
@@ -85,11 +84,10 @@ function Dashboard({ user }) {
                                                 {new Date(checkin.checkin_time).toLocaleTimeString()}
                                             </td>
                                             <td className="py-3">
-                                                <span className={`px-2 py-1 rounded text-xs ${
-                                                    checkin.status === 'checked_in' 
-                                                        ? 'bg-green-100 text-green-800' 
+                                                <span className={`px-2 py-1 rounded text-xs ${checkin.status === 'checked_in'
+                                                        ? 'bg-green-100 text-green-800'
                                                         : 'bg-gray-100 text-gray-800'
-                                                }`}>
+                                                    }`}>
                                                     {checkin.status}
                                                 </span>
                                             </td>
@@ -110,7 +108,7 @@ function Dashboard({ user }) {
     return (
         <div>
             <h2 className="text-2xl font-bold mb-6">My Dashboard</h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <div className="bg-white p-6 rounded-lg shadow">
                     <h3 className="text-gray-500 text-sm">Assigned Clients</h3>

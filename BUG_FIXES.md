@@ -82,3 +82,11 @@ This document lists all bugs identified and fixed in the Field Force Tracker app
 **Cause:** `DATE_SUB(NOW(), INTERVAL 7 DAY)` is MySQL syntax.  
 **Fix:** Changed to `datetime('now', '-7 days')`.  
 **Reasoning:** Same issue as Bug 7—SQLite has its own date arithmetic syntax.
+
+
+## Bug 10: Role Check Uses User ID Instead of Role
+
+**Location:** `frontend/src/pages/Dashboard.jsx`, line 15  
+**Cause:** `user.id === 1` was used to check if user is a manager. Only works if the first user is always a manager.  
+**Fix:** Changed to `user.role === 'manager'`.  
+**Reasoning:** Hardcoded IDs break when data changes. Role field exists for this purpose.
