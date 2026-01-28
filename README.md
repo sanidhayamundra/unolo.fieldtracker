@@ -60,21 +60,39 @@ Frontend runs on: `http://localhost:5173`
 ## API Endpoints
 
 ### Authentication
-- `POST /api/auth/login` - Login
+- `POST /api/auth/login` - Login (email is case-insensitive)
 - `GET /api/auth/me` - Get current user
 
 ### Check-ins
-- `GET /api/checkin/clients` - Get assigned clients
-- `POST /api/checkin` - Create check-in
-- `PUT /api/checkin/checkout` - Checkout
-- `GET /api/checkin/history` - Get check-in history
+- `GET /api/checkin/clients` - Get assigned clients (includes lat/lng)
+- `POST /api/checkin` - Create check-in (returns `distance_km` from client)
+- `PUT /api/checkin/checkout` - Checkout from active check-in
+- `GET /api/checkin/history` - Get check-in history (includes `distance_from_client`)
 - `GET /api/checkin/active` - Get active check-in
 
 ### Dashboard
-- `GET /api/dashboard/stats` - Manager stats
-- `GET /api/dashboard/employee` - Employee stats
+- `GET /api/dashboard/stats` - Manager dashboard stats
+- `GET /api/dashboard/employee` - Employee dashboard stats
+
+### Reports (Manager Only)
+- `GET /api/reports/daily-summary?date=YYYY-MM-DD&employee_id=N` - Daily summary report
+  - `date` (required): Date in YYYY-MM-DD format
+  - `employee_id` (optional): Filter to specific employee
+  - Returns per-employee check-in counts, working hours, unique clients visited
+  - Includes team-level aggregates
+
+## Features
+
+### Distance Calculation
+Check-ins now calculate distance from client location using the Haversine formula:
+- Distance is stored in `distance_from_client` (kilometers, 2 decimal places)
+- Frontend shows distance preview before check-in
+- Warning displayed if more than 500m from client
+- History page displays distance column
 
 ## Notes
 
 - The database uses SQLite - no external database setup required
 - Run `npm run init-db` to reset the database to initial state
+- See `BUG_FIXES.md` for documented fixes
+- See `QUESTIONS.md` for technical discussion
