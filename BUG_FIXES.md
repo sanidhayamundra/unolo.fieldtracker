@@ -65,3 +65,13 @@ This document lists all bugs identified and fixed in the Field Force Tracker app
 **Reasoning:** Different databases have different function syntax. SQLite uses datetime().
 
 
+---
+
+## Bug 8: Checkout Doesn't Verify Status
+
+**Location:** `backend/routes/checkin.js`, lines 78-80  
+**Cause:** Query found the most recent check-in regardless of status. Could "checkout" from an already checked-out record.  
+**Fix:** Added `status = 'checked_in'` filter to the query.  
+**Reasoning:** State machines need proper guards. Only active check-ins should be checkable-out.
+
+---
